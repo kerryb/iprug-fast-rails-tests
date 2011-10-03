@@ -1,19 +1,17 @@
 require 'spec_helper'
 
 describe Order do
-  describe "calculating discounts" do
-    context "for an empty order" do
-      its(:discount_percentage) { should == 0 }
-    end
+  describe "#discount_percentage" do
+    let(:calculates_discount) { stub :discount_percentage => 10 }
+    before { CalculatesDiscount.stub(:new).with(subject).and_return calculates_discount }
 
-    context "for an order under £100" do
-      before { subject.stub :line_items => [stub(:total => 49.99), stub(:total => 50)] }
-      its(:discount_percentage) { should == 0 }
+    it "delegates to CalculatesDiscount" do
+      subject.discount_percentage.should == 10
     end
+  end
 
-    context "for an order of £100" do
-      before { subject.stub :line_items => [stub(:total => 50), stub(:total => 50)] }
-      its(:discount_percentage) { should == 5 }
-    end
+  it "calculates discount (integration test)" do
+    subject.stub :line_items => [stub(:total => 50), stub(:total => 50)]
+    subject.discount_percentage.should == 5
   end
 end
