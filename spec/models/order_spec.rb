@@ -1,19 +1,14 @@
 require 'spec_helper'
 
 describe Order do
-  describe "calculating discounts" do
-    context "for an empty order" do
-      its(:discount_percentage) { should == 0 }
-    end
+  # if we want to just check the module's included
+  it "includes the OrderExtensions::CalculatesDiscount module" do
+    Order.included_modules.should include(OrderExtensions::CalculatesDiscount)
+  end
 
-    context "for an order under £100" do
-      before { subject.stub :line_items => [stub(:total => 49.99), stub(:total => 50)] }
-      its(:discount_percentage) { should == 0 }
-    end
-
-    context "for an order of £100" do
-      before { subject.stub :line_items => [stub(:total => 50), stub(:total => 50)] }
-      its(:discount_percentage) { should == 5 }
-    end
+  # or as an integration test
+  it "integrates OrderExtensions::CalculatesDiscount" do
+    subject.stub :line_items => [stub(:total => 50), stub(:total => 50)]
+    subject.discount_percentage.should == 5
   end
 end
